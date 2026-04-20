@@ -6,61 +6,121 @@
 </head>
 <body>
 
-<h2>Login</h2>
-<input type="password" id="pw" placeholder="Passwort">
-<button onclick="login()">Login</button>
+<!-- LOGIN -->
+<div id="login">
+  <h2>Login</h2>
+  <input type="password" id="pw" placeholder="Passwort">
+  <button onclick="login()">Login</button>
+</div>
 
+<!-- PROFIL -->
+<div id="profile" style="display:none;">
+  <h2>Deine Daten</h2>
+  
+  <select id="gender">
+    <option value="male">Männlich</option>
+    <option value="female">Weiblich</option>
+  </select>
+  
+  <input type="number" id="age" placeholder="Alter">
+  <input type="number" id="weight" placeholder="Gewicht (kg)">
+  
+  <button onclick="startApp()">Start</button>
+</div>
+
+<!-- APP -->
 <div id="app" style="display:none;">
   <h2>Kalorien Tracker</h2>
 
-  <select id="meal">
-    <option>Frühstück</option>
-    <option>Mittag</option>
-    <option>Abend</option>
-  </select>
+  <h3>Frühstück</h3>
+  <input type="text" id="f_food" placeholder="Essen">
+  <input type="number" id="f_kcal" placeholder="kcal">
+  <button onclick="addMeal('f')">+</button>
 
-  <input type="text" id="food" placeholder="Was hast du gegessen?">
-  <input type="number" id="kcal" placeholder="Kalorien">
+  <h3>Mittag</h3>
+  <input type="text" id="m_food" placeholder="Essen">
+  <input type="number" id="m_kcal" placeholder="kcal">
+  <button onclick="addMeal('m')">+</button>
 
-  <button onclick="add()">Speichern</button>
+  <h3>Abend</h3>
+  <input type="text" id="a_food" placeholder="Essen">
+  <input type="number" id="a_kcal" placeholder="kcal">
+  <button onclick="addMeal('a')">+</button>
 
   <h3>Heute:</h3>
   <ul id="list"></ul>
 
   <h3 id="total">Gesamt: 0 kcal</h3>
+  <h3 id="target"></h3>
+  <h3 id="feedback"></h3>
 </div>
 
 <script>
 let total = 0;
+let target = 0;
 
-// Login
+// LOGIN
 function login() {
-  const pw = document.getElementById("pw").value;
-  if (pw === "12345") {
-    document.getElementById("app").style.display = "block";
+  if (document.getElementById("pw").value === "12345") {
+    document.getElementById("login").style.display = "none";
+    document.getElementById("profile").style.display = "block";
   } else {
     alert("Falsches Passwort");
   }
 }
 
-// Eintrag hinzufügen
-function add() {
-  const meal = document.getElementById("meal").value;
-  const food = document.getElementById("food").value;
-  const kcal = Number(document.getElementById("kcal").value);
+// PROFIL → KALORIENBERECHNUNG
+function startApp() {
+  const gender = document.getElementById("gender").value;
+  const age = Number(document.getElementById("age").value);
+  const weight = Number(document.getElementById("weight").value);
+
+  if (!age || !weight) return;
+
+  // einfache Formel (geschätzt)
+  if (gender === "male") {
+    target = 24 * weight;
+  } else {
+    target = 22 * weight;
+  }
+
+  document.getElementById("profile").style.display = "none";
+  document.getElementById("app").style.display = "block";
+
+  document.getElementById("target").textContent = "Dein Bedarf: " + target + " kcal";
+}
+
+// ESSEN HINZUFÜGEN
+function addMeal(type) {
+  const food = document.getElementById(type + "_food").value;
+  const kcal = Number(document.getElementById(type + "_kcal").value);
 
   if (!food || !kcal) return;
 
   total += kcal;
 
   const li = document.createElement("li");
-  li.textContent = meal + ": " + food + " (" + kcal + " kcal)";
+  li.textContent = food + " (" + kcal + " kcal)";
   document.getElementById("list").appendChild(li);
 
   document.getElementById("total").textContent = "Gesamt: " + total + " kcal";
 
-  // Speichern im Browser
-  localStorage.setItem("total", total);
+  check();
+}
+
+// FEEDBACK
+function check() {
+  let text = "";
+
+  if (total < target - 200) {
+    text = "Zu wenig gegessen";
+  } else if (total > target + 200) {
+    text = "Zu viel gegessen";
+  } else {
+    text = "Perfekt 👍";
+  }
+
+  document.getElementById("feedback").textContent = text;
 }
 </script>
 
