@@ -2,20 +2,67 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Meine Website</title>
-  <style>
-    body {
-      font-family: Arial;
-      text-align: center;
-      margin-top: 50px;
-    }
-  </style>
+  <title>Kalorien Tracker</title>
 </head>
 <body>
-  <h1>Willkommen auf meiner Website</h1>
-  <p>Ich habe das selbst programmiert </p>
+
+<h2>Login</h2>
+<input type="password" id="pw" placeholder="Passwort">
+<button onclick="login()">Login</button>
+
+<div id="app" style="display:none;">
+  <h2>Kalorien Tracker</h2>
+
+  <select id="meal">
+    <option>Frühstück</option>
+    <option>Mittag</option>
+    <option>Abend</option>
+  </select>
+
+  <input type="text" id="food" placeholder="Was hast du gegessen?">
+  <input type="number" id="kcal" placeholder="Kalorien">
+
+  <button onclick="add()">Speichern</button>
+
+  <h3>Heute:</h3>
+  <ul id="list"></ul>
+
+  <h3 id="total">Gesamt: 0 kcal</h3>
+</div>
+
+<script>
+let total = 0;
+
+// Login
+function login() {
+  const pw = document.getElementById("pw").value;
+  if (pw === "12345") {
+    document.getElementById("app").style.display = "block";
+  } else {
+    alert("Falsches Passwort");
+  }
+}
+
+// Eintrag hinzufügen
+function add() {
+  const meal = document.getElementById("meal").value;
+  const food = document.getElementById("food").value;
+  const kcal = Number(document.getElementById("kcal").value);
+
+  if (!food || !kcal) return;
+
+  total += kcal;
+
+  const li = document.createElement("li");
+  li.textContent = meal + ": " + food + " (" + kcal + " kcal)";
+  document.getElementById("list").appendChild(li);
+
+  document.getElementById("total").textContent = "Gesamt: " + total + " kcal";
+
+  // Speichern im Browser
+  localStorage.setItem("total", total);
+}
+</script>
+
 </body>
-  <a href="seite2.html">
-    <button>Klick mich</button>
-  </a>
-</body>
+</html>
